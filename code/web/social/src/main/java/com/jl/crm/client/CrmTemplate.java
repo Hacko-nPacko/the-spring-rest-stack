@@ -286,6 +286,10 @@ public class CrmTemplate extends AbstractOAuth2ApiBinding implements CrmOperatio
             super(content, links);
         }
 
+        public UserResource(){
+            this( null );
+        }
+
         public UserResource(User content, Iterable<Link> links) {
             super(content, links);
         }
