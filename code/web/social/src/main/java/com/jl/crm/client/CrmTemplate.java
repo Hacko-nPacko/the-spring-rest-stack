@@ -1,6 +1,7 @@
 package com.jl.crm.client;
 
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.*;
@@ -281,9 +282,23 @@ public class CrmTemplate extends AbstractOAuth2ApiBinding implements CrmOperatio
     }
 
     public static class UserResource extends Resource<User> {
+        public UserResource(User content, Link... links) {
+            super(content, links);
+        }
+
+        public UserResource(User content, Iterable<Link> links) {
+            super(content, links);
+        }
     }
 
     public static class CustomerResource extends Resource<Customer> {
+        public CustomerResource(Customer content, Link... links) {
+            super(content, links);
+        }
+
+        public CustomerResource(Customer content, Iterable<Link> links) {
+            super(content, links);
+        }
     }
 
     /**
