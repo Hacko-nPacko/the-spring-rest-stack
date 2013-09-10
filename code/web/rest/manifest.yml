@@ -1,0 +1,14 @@
+---
+applications:
+- name: rest
+  memory: 512M
+  instances: 1	
+  host: s2gxrest
+  domain: cfapps.io
+  path: target/rest-1.0-SNAPSHOT.war
+  services:
+    elephantsql-349fc:
+      label: elephantsql
+      provider: elephantsql
+      version: n/a
+      plan: turtle

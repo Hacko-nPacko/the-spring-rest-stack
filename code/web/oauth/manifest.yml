@@ -1,0 +1,14 @@
+---
+applications:
+- name: spring-oauth
+  memory: 512M
+  instances: 1	
+  host: spring-oauth
+  domain: cfapps.io
+  path: target/oauth-1.0-SNAPSHOT.war
+  services:
+    elephantsql-349fc:
+      label: elephantsql
+      provider: elephantsql
+      version: n/a
+      plan: turtle

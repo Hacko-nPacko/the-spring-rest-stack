@@ -1,17 +1,11 @@
 package com.jl.crm.services;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.cloudfoundry.runtime.env.CloudEnvironment;
+import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
+import org.cloudfoundry.runtime.service.relational.RdbmsServiceCreator;
 import org.springframework.context.annotation.*;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactoryBean;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
@@ -24,10 +18,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.sql.Driver;
+import java.util.Collection;
 
 @EnableJpaRepositories
 @EnableTransactionManagement
@@ -79,7 +70,7 @@ public class ServiceConfiguration {
     }
 
 }
-
+/*
 @Configuration
 @Profile({"production"})
 class ProductionDataSourceConfiguration {
@@ -102,10 +93,35 @@ class ProductionDataSourceConfiguration {
         dataSource.setPassword(env.getProperty("dataSource.password").trim());
         return dataSource;
     }
-}
+}*/
 
 @Configuration
-@Profile({"default", "test"})
+class CloudFoundryDataSourceConfiguration {
+
+    private CloudEnvironment cloudEnvironment = new CloudEnvironment();
+
+    @Bean
+    public HibernateJpaVendorAdapter hibernateJpaVendorAdapter() {
+        HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+        adapter.setDatabase(Database.POSTGRESQL);
+        adapter.setGenerateDdl(true);
+        adapter.setShowSql(true);
+        return adapter;
+    }
+
+    @Bean
+    public DataSource dataSource() {
+        Collection<RdbmsServiceInfo> serviceInfoCollection = cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class);
+        Assert.notNull(serviceInfoCollection.size() == 0, "there should be at least one RDBMS bound to the application");
+        RdbmsServiceInfo rdbmsServiceInfo = serviceInfoCollection.iterator().next();
+        RdbmsServiceCreator rdbmsServiceCreator = new RdbmsServiceCreator();
+        return rdbmsServiceCreator.createService(rdbmsServiceInfo);
+    }
+
+}/*
+
+@Configuration
+@Profile({ "test"})
 class EmbeddedDataSourceConfiguration {
 
     private Log log = LogFactory.getLog(getClass());
@@ -144,10 +160,10 @@ class EmbeddedDataSourceConfiguration {
         return adapter;
     }
 
-    /**
+    *//**
      * You can access this H2 database at <a href = "http://localhost:8080/admin/console">the H2 administration
      * console</a>.
-     */
+     *//*
     @Bean
     public DataSource dataSource() {
 
@@ -165,3 +181,4 @@ class EmbeddedDataSourceConfiguration {
     }
 
 }
+*/
